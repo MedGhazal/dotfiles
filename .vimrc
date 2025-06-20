@@ -1,17 +1,22 @@
-set nocompatible
 set encoding=utf-8
-set foldmethod=indent
 set relativenumber
 set number
+set nocompatible
+set foldmethod=indent
 set hls is
 set wrap linebreak
 set backspace=indent,eol,start
 set cursorline
-
-filetype off   
-syntax on
+set smartindent
+set wildmenu
+set noshowmode
 
 set rtp+=~/.vim/bundle/Vundle.vim
+set rtp+=/usr/local/opt/fzf
+set foldtext=gitgutter#fold#foldtext()
+
+syntax on
+filetype on
 
 au BufNewFile,BufRead *.py
     \ set tabstop=4 |
@@ -30,86 +35,58 @@ au BufNewFile,BufRead *.js,*.html,*.css
 
 call vundle#begin()
 	Plugin 'VundleVim/Vundle.vim'
+	Plugin 'catppuccin/vim'
 	Plugin 'vim-airline/vim-airline'
 	Plugin 'vim-airline/vim-airline-themes'
 	Plugin 'preservim/nerdtree'
-	Plugin 'airblade/vim-gitgutter'
 	Plugin 'tpope/vim-fugitive'
 	Plugin 'mattn/emmet-vim'
-	Plugin 'tmhedberg/SimpylFold'
-	Plugin 'vim-scripts/indentpython.vim'
-	Plugin 'Valloric/YouCompleteMe'
 	Plugin 'vim-syntastic/syntastic'
-	Plugin 'nvie/vim-flake8'
-	Plugin 'jnurmine/Zenburn'
-	Plugin 'altercation/vim-colors-solarized'
 	Plugin 'lervag/vimtex'
 	Plugin 'tpope/vim-surround'
 	Plugin 'tpope/vim-commentary'
-	Plugin 'vim-scripts/ReplaceWithRegister'
-	Plugin 'christoomey/vim-system-copy'
+	Plugin 'tpope/vim-repeat'
 	Plugin 'junegunn/fzf', { 'do': { -> fzf#install() } }
 	Plugin 'junegunn/fzf.vim'
-	Plugin 'tpope/vim-repeat'
 	Plugin 'preservim/tagbar'
-	Plugin 'python-mode/python-mode'
+	Plugin 'mbbill/undotree'
+	Plugin 'sheerun/vim-polyglot'
 call vundle#end()  
 
-let g:airline_theme='base16'
-let g:airline#extensions#tabline#enabled = 1
-let python_highlight_all=1
-set rtp+=/usr/local/opt/fzf
-let g:solarized_termcolors=256
-if has('gui_running')
-  set background=dark
-  colorscheme solarized
-else
-  colorscheme zenburn
-endif
+let g:lightline = {'colorscheme': 'catppuccin_mocha'}
+let g:airline_theme = 'catppuccin_mocha'
 
-call togglebg#map("<F5>")
+colorscheme catppuccin_mocha
+set background=dark
+set termguicolors
 
 filetype plugin indent on
-set omnifunc=syntaxcomplete#Complete
 
-let g:user_emmet_settings = {
-\  'variables': {'lang': 'ja'},
-\  'html': {
-\    'default_attributes': {
-\      'option': {'value': v:null},
-\      'textarea': {'id': v:null, 'name': v:null, 'cols': 10, 'rows': 10},
-\    },
-\    'snippets': {
-\      'html:5': "<!DOCTYPE html>\n"
-\              ."<html lang=\"${lang}\">\n"
-\              ."<head>\n"
-\              ."\t<meta charset=\"${charset}\">\n"
-\              ."\t<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n"
-\              ."\t<title></title>\n"
-\              ."</head>\n"
-\              ."<body>\n\t${child}|\n</body>\n"
-\              ."</html>",
-\    },
-\  },
-\}
 let g:user_emmet_mode='n'
 let g:user_emmet_leader_key=','
 let NERDTreeIgnore = ['\.pyc$', '__pycache__']
 let NERDTreeMinimalUI = 1
 let g:fzflayout = { 'window': { 'width': 0.8, 'height': 0.8} }
 let $FZF_DEFAULT_OPTS = '--reverse'
+let g:ycm_add_preview_to_completeopt = 'popup'
 
 " Keybindings
-nmap <C-u> :Buffers<CR>
+nnoremap <SPACE> <Nop>
+let mapleader=" "
+nmap b :Buffers<CR>
 nmap <Tab> :bp<CR>
 nmap ö :bp<CR>
 nmap ä :bn<CR>
 nmap - :bd<CR>
-nmap <C-c> :bd<CR>
-nmap <C-p> :Files<CR>
+nmap <leader>f :Files<CR>
+nmap ]h <Plug>(GitGutterNextHunk)
+nmap [h <Plug>(GitGutterPrevHunk)
 map <leader>t :TagbarToggle<CR>
-map <leader>n :NERDTree<CR>
-map <leader>c :Commentary<CR>
+map <leader>n :NERDTreeToggle<CR>
+map <leader>nf :NERDTreeFind<CR>
+map <leader>ne :NERDTreeExplore<CR>
+map <leader>g :Git push<CR>
+map <leader>u :UndotreeToggle<CR>
 
 nmap <C-h> <C-w>h
 nmap <C-j> <C-w>j
@@ -117,8 +94,25 @@ nmap <C-k> <C-w>k
 nmap <C-l> <C-w>l
 
 autocmd FileType python map <buffer> <leader>f :call flake8#Flake8()<CR>
+autocmd FileType tex,plaintex map <buffer> <leader>c :!./compile.sh<CR>
 
 map <Down> <Nop>
 map <Left> <Nop>
 map <Right> <Nop>
 map <Up> <Nop>
+
+highlight SpellBad ctermfg=009 ctermbg=000 guifg=#000000 guibg=#ffffff
+
+let g:tmux_navigator_no_mappings = 1
+
+nnoremap <silent> {Left-Mapping} :<C-U>TmuxNavigateLeft<cr>
+nnoremap <silent> {Down-Mapping} :<C-U>TmuxNavigateDown<cr>
+nnoremap <silent> {Up-Mapping} :<C-U>TmuxNavigateUp<cr>
+nnoremap <silent> {Right-Mapping} :<C-U>TmuxNavigateRight<cr>
+nnoremap <silent> {Previous-Mapping} :<C-U>TmuxNavigatePrevious<cr>
+
+function! GitStatus()
+	  let [a,m,r] = GitGutterGetHunkSummary()
+	    return printf('+%d ~%d -%d', a, m, r)
+endfunction
+set statusline+=%{GitStatus()}
