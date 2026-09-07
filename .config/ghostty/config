@@ -17,3 +17,11 @@ mouse-hide-while-typing = true
 
 macos-option-as-alt = left
 term = xterm-256color
+
+keybind = super+shift+e=new_split:right
+keybind = super+shift+o=new_split:down
+
+keybind = super+ctrl+h=goto_split:left
+keybind = super+ctrl+j=goto_split:down
+keybind = super+ctrl+k=goto_split:up
+keybind = super+ctrl+l=goto_split:right
