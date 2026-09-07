@@ -1,36 +1,38 @@
-export ZSH="/Users/mohamedghazal/.oh-my-zsh"
+export ZSH="$HOME/.oh-my-zsh"
+export EDITOR="nvim"
 
-ZSH_THEME="spaceship"
-bindkey -v
+ZSH_THEME=""
 
 plugins=(
+	zsh-autosuggestions
+	zsh-syntax-highlighting
+	zsh-completions
+	brew
+	web-search
 	git
-	vi-mode
-	fzf
 )
 
-source $ZSH/oh-my-zsh.sh
-SPACESHIP_GIT_BRANCH_COLOR=white
-export PATH="/usr/local/opt/bison/bin:$PATH"
-export FZF_BASE="/opt/homebrew/opt/fzf"
+fpath=(
+  /opt/homebrew/share/zsh/site-functions
+  ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-completions/src
+  $fpath
+)
 
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-export PATH="/opt/homebrew/bin:$PATH"
-export PATH="/opt/homebrew/opt/qt@5/bin:$PATH"
+autoload -U promptinit; promptinit
+prompt pure
+
+source "$ZSH/oh-my-zsh.sh"
 
 alias nv="nvim"
-alias v="v"
+alias zconfig="nvim ~/.zshrc"
+alias zsource="source ~/.zshrc"
+alias l="ls -lah"
 
-alias vimdiff='nvim -d'
-export EDITOR=nvim
-export PATH="/opt/homebrew/sbin:$PATH"
-alias python="/opt/homebrew/bin/python3.13"
-
-export LD_LIBRARY_PATH=/usr/local/Cellar/instantclient-sqlplus/19.3.0.0.0dbru/lib:/usr/local/Cellar/instantclient-basic/19.3.0.0.0dbru/lib:$LD_LIBRARY_PATH
-export PATH=/usr/local/Cellar/instantclient-sqlplus/19.3.0.0.0dbru/bin:$PATH
-export PATH="$HOME/.jenv/bin:$PATH"
-eval "$(jenv init -)"
-
-source <(fzf --zsh)
-export JAVA_HOME="/opt/homebrew/opt/openjdk"
-export PATH="$JAVA_HOME/bin:$PATH"
+typeset -U path
+path=(
+  /opt/homebrew/opt/postgresql@18/bin
+  /opt/homebrew/bin
+  $HOME/.npm-global/bin
+  $path
+)
+export PATH
